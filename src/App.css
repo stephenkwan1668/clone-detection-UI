@@ -83,3 +83,7 @@
   background-color: rgba(255, 0, 0, 0.3); /* Semi-transparent red */
   cursor: pointer;
 }
+
+h1{
+    color: #812929;
+}
