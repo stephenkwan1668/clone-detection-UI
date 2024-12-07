@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 const JsonReader: React.FC = () => {
     useEffect(() => {
-        const path = '/clones.json'; // Update the path to the public directory
+        const path = '/testBasicClones.json'; // Update the path to the public directory
 
         fetch(path)
             .then(response => {

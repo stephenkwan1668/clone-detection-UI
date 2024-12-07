@@ -13,7 +13,7 @@ const HighlightedCode: React.FC<HighlightedCodeProps> = ({ startCloneLine, endCl
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
     useEffect(() => {
-        fetch('/files.json')
+        fetch('javaFileNames/files.json')
             .then(response => response.json())
             .then(files => {
                 const javaFiles = files.filter((file: string) => file.endsWith('.java'));

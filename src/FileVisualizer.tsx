@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css'; // Ensure styles are applied
 
 interface FileProps {
@@ -6,39 +7,17 @@ interface FileProps {
   cloneRanges: [number, number][];
 }
 
-function openSourceCodeWindow(fileName: string, range: [number, number], content: string) {
-  const windowTitle = `${fileName} - Duplication code from Line ${range[0]} to ${range[1]}`;
-  const newWindow = window.open('', windowTitle, 'width=600,height=400');
-  if (newWindow) {
-    newWindow.document.write(`
-      <html>
-        <head>
-          <title>${windowTitle}</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; }
-            .line-number { color: #888; }
-          </style>
-        </head>
-        <body>
-          <h3>${windowTitle}</h3>
-          <pre>${content}</pre>
-        </body>
-      </html>
-    `);
-    newWindow.document.close();
-  }
+interface FileVisualizerProps {
+  onFileClick: (fileName: string, range: [number, number]) => void;
+  clonesData: any[];
 }
 
-const FileVisualizer: React.FC = () => {
-  // Mock data for demonstration
-  const files: FileProps[] = [
-    { lineOfCodes: 100, fileName: 'File1.java', cloneRanges: [[20, 40], [60, 80]] },
-    { lineOfCodes: 150, fileName: 'File2.java', cloneRanges: [[50, 70]] },
-    { lineOfCodes: 200, fileName: 'File3.java', cloneRanges: [[100, 150], [160, 180]] }
-  ];
-
-  // const [selectedRange, setSelectedRange] = useState<{ fileIndex: number; rangeIndex: number } | null>(null);
+const FileVisualizer: React.FC<FileVisualizerProps> = ({ onFileClick, clonesData }) => {
+  const files: FileProps[] = clonesData.map(clone => ({
+    lineOfCodes: 100, // Mock value, replace with actual data if available
+    fileName: clone.fileName,
+    cloneRanges: [[clone.cloneRange.startLine, clone.cloneRange.endLine]]
+  }));
 
   const handleRangeClick = (fileIndex: number, rangeIndex: number) => {
     const fileName = files[fileIndex].fileName;
@@ -48,34 +27,35 @@ const FileVisualizer: React.FC = () => {
       return `<span class="line-number">${lineNumber}</span>: // Code for line ${lineNumber}`;
     }).join('\n');
     openSourceCodeWindow(fileName, range, sourceCode);
+    onFileClick(fileName, range);
   };
 
   return (
-    <div className="file-container">
-      {files.map((file, fileIndex) => (
-        <div key={fileIndex} className="file" style={{ height: `${file.lineOfCodes}px` }}>
-          <div className="file-title">{file.fileName}</div>
-          <div className="file-content">
-            {file.cloneRanges.map((range, rangeIndex) => {
-              const rangeHeight = ((range[1] - range[0]) / file.lineOfCodes) * 100;
-              const rangeTop = ((range[0] + (range[1] - range[0]) / 2) / file.lineOfCodes) * 100 - rangeHeight / 2;
-              return (
-                <div
-                  key={rangeIndex}
-                  className="clone-range"
-                  style={{
-                    top: `${rangeTop}%`,
-                    height: `${rangeHeight}%`,
-                  }}
-                  onClick={() => handleRangeClick(fileIndex, rangeIndex)}
-                />
-              );
-            })}
-          </div>
-        </div>
-      ))}
-    </div>
+      <div className="file-container">
+        {files.map((file, fileIndex) => (
+            <div key={fileIndex} className="file" style={{ height: `${file.lineOfCodes}px` }}>
+              <div className="file-title">{file.fileName}</div>
+              <div className="file-content">
+                {file.cloneRanges.map((range, rangeIndex) => {
+                  const rangeHeight = ((range[1] - range[0]) / file.lineOfCodes) * 100;
+                  const rangeTop = ((range[0] + (range[1] - range[0]) / 2) / file.lineOfCodes) * 100 - rangeHeight / 2;
+                  return (
+                      <div
+                          key={rangeIndex}
+                          className="clone-range"
+                          style={{
+                            top: `${rangeTop}%`,
+                            height: `${rangeHeight}%`,
+                          }}
+                          onClick={() => handleRangeClick(fileIndex, rangeIndex)}
+                      />
+                  );
+                })}
+              </div>
+            </div>
+        ))}
+      </div>
   );
 };
 
-export default FileVisualizer; 
+export default FileVisualizer;
